@@ -1,81 +1,723 @@
-<DOCTYPE html>
-    <html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width,initial-scale=1.0">
-        <title>Tanzatronics</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                margin: 0;
-                background-color:lightblue;
-                color: aliceblue;
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Tanzatronics | Electronics Store</title>
+    <style>
+        :root {
+            --primary-bg: #2c3e50;
+            --accent: #d35400;
+            --accent-hover: #e67e22;
+            --light-bg: #f4f7f6;
+            --white: #ffffff;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: var(--light-bg);
+            color: #333;
+        }
+
+        /* --- Header & Navigation --- */
+        .header {
+            background-color: var(--white);
+            padding: 15px 5%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-top {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-bg);
+            letter-spacing: 1px;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .search-container {
+            margin-top: 15px;
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            overflow: hidden;
+            background: white;
+            transition: border-color 0.3s;
+        }
+
+        .search-container:focus-within {
+            border-color: var(--accent);
+        }
+
+        .search-container input {
+            border: none;
+            padding: 10px 20px;
+            width: 100%;
+            outline: none;
+        }
+
+        .search-btn {
+            background: none;
+            border: none;
+            padding: 0 15px;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 20px;
+            font-size: 1.5rem;
+        }
+
+        .icon-btn {
+            cursor: pointer;
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+        .icon-btn:hover {
+            transform: scale(1.1);
+            color: var(--accent);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: red;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        /* --- Cart Modal --- */
+        .cart-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: flex-end;
+        }
+
+        .cart-modal.active {
+            display: flex;
+        }
+
+        .cart-panel {
+            background: white;
+            width: 100%;
+            max-width: 450px;
+            height: 100%;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 15px;
+        }
+
+        .cart-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .cart-close {
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .cart-items {
+            flex: 1;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 0.95rem;
+        }
+
+        .cart-item-details {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            color: #222;
+        }
+
+        .cart-item-qty {
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .cart-item-price {
+            color: var(--accent);
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .cart-remove {
+            color: #e74c3c;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .cart-empty {
+            text-align: center;
+            color: #888;
+            padding: 40px 20px;
+        }
+
+        .cart-footer {
+            border-top: 2px solid #ddd;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .cart-total-price {
+            color: var(--accent);
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .checkout-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        /* --- Sidebar --- */
+        .menu-btn {
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--primary-bg);
+        }
+
+        .nav-sidebar {
+            position: fixed;
+            left: -300px;
+            top: 0;
+            width: 280px;
+            height: 100%;
+            background: white;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
+            transition: 0.3s ease;
+            z-index: 1000;
+        }
+
+        .nav-sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            background: var(--primary-bg);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu>li {
+            padding: 15px 25px;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .submenu {
+            list-style: none;
+            padding: 0;
+            background: #fdfdfd;
+            display: none;
+        }
+
+        .submenu.show {
+            display: block;
+        }
+
+        .submenu li {
+            padding: 12px 40px;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        /* --- Login Modal --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-card {
+            background: white;
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            position: relative;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
             }
 
-            .header {
-                background-color: chocolate;
-                color: rgb(232, 222, 222);
-                padding: 10px 40px;
-                text-align: left;
+            to {
+                transform: translateY(0);
+                opacity: 1;
             }
+        }
 
-            .hidden {
-                display: none;
-            }
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
 
-            .menu {
-                list-style: none;
-                padding: 0;
-            }
+        .modal-card h2 {
+            margin-top: 0;
+            color: var(--primary-bg);
+        }
 
-            .menu>li {
-                padding: 12px;
-                border-bottom: 1px solid #ccc;
-                cursor: pointer;
-            }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
 
-            .submenu {
-                padding-left: 20px;
-                background: #f5f5f5;
-            }
-        </style>
-    </head>
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
 
-    <body>
-        <!--header-->
-        <header class="header">
-            <h1>TANZAtronics</h1>
-            <p>Menu</p>
-        </header>
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
 
-        <button id="menuBtn">☰ Menu</button>
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
 
-        <ul id="menu" class="menu hidden">
-            <li onclick="toggleSub('hot')">home ▶
-                <ul id="hot" class="submenu hidden">
-                    <li>Discount Items</li>
-                    <li>Clearance</li>
-                </ul>
-            </li>
+        .auth-btn:hover {
+            background: var(--accent-hover);
+        }
 
-            <li onclick="toggleSub('new')">contact ▶
-                <ul id="new" class="submenu hidden">
-                    <li>New Arrivals</li>
-                    <li>Trending</li>
-                </ul>
-            </li>
+        .switch-form {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .switch-form span {
+            color: var(--accent);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .user-badge {
+            background: #2ecc71;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            position: absolute;
+            top: -5px;
+            right: -10px;
+        }
+
+        .hero {
+            background: url("images/banner.jpg") center/cover no-repeat;
+            height: 350px;
+            display: flex;
+            align-items: center;
+            padding-left: 8%;
+        }
+
+        .hero-content {
+            background: rgba(0, 0, 0, .6);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        .hero-content h1 {
+            margin: 0;
+            font-size: 2.2rem;
+        }
+
+        .hero-content p {
+            margin: 10px 0;
+        }
+
+        .hero-content button {
+            background: var(--accent);
+            border: none;
+            padding: 12px 20px;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        /* ===== CATEGORIES ===== */
+        .categories {
+            background: white;
+            margin: 20px 5%;
+            padding: 20px;
+            border-radius: 12px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 15px;
+            text-align: center;
+        }
+
+        .category {
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .category:hover {
+            background: #e0e0e0;
+        }
+
+        /* ===== HOT DEALS ===== */
+        .section-title {
+            margin: 30px 5% 10px;
+            font-size: 1.4rem;
+            color: var(--dark);
+        }
+
+        .products {
+            padding: 10px 5% 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .product {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 15px;
+            position: relative;
+        }
+
+        .badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: red;
+            color: white;
+            font-size: .8rem;
+            padding: 4px 8px;
+            border-radius: 5px;
+        }
+
+        .product img {
+            width: 100%;
+            height: 180px;
+            object-fit: contain;
+        }
+
+        .product h4 {
+            margin: 10px 0 5px;
+        }
+
+        .old-price {
+            text-decoration: line-through;
+            color: #888;
+            font-size: .85rem;
+        }
+
+        .price {
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .product button {
+            margin-top: 10px;
+            width: 100%;
+            padding: 10px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .product button:hover {
+            background: #084298;
+        }
+
+        footer {
+            background-color: var(--primary-bg);
+            color: #0e7ff0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            padding: 2%;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="header-top">
+            <div class="menu-btn" onclick="toggleMenu()">☰</div>
+            <h1 class="brand-name" onclick="location.reload()">Tanzatronics</h1>
+            <div class="header-icons">
+                <div class="icon-btn" onclick="openLogin()">
+                    <span id="userIcon">👤</span>
+                    <span id="loggedInBadge" class="user-badge" style="display:none;">✓</span>
+                </div>
+                <div class="icon-btn" onclick="toggleCart()" style="position: relative;">
+                    <span>🛒</span>
+                    <span class="cart-badge" id="cartCount" style="display:none;">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="search-container">
+            <button class="search-btn">🔍</button>
+            <input type="text" placeholder="Search laptops, phones, TVs...">
+        </div>
+    </header>
+
+    <div class="hero-content">
+        <h1>Tanzatronics Deals Online</h1>
+        <p>Buy electronics at real Kariakoo prices</p>
+        <p>Innovative Electronics For Tanzania</p>
+        <button>Shop Now</button>
+    </div>
+    </section>
+
+    <!-- CATEGORIES -->
+    <section class="categories">
+        <a href="phones.html" class="category">📱 Phones</a>
+        <a href="tvs.html" class="category">📺 TVs</a>
+        <a href="laptops.html" class="category">💻 Laptops</a>
+        <a href="audio.html" class="category">🔊 Audio</a>
+        <a href="consoles.html" class="category">🎮 Consoles</a>
+    </section>
+
+    <!-- HOT DEALS -->
+    <h3 class="section-title">🔥 Hot Deals</h3>
+
+    <section class="products">
+        <div class="product">
+            <span class="badge">-20%</span>
+            <img src="iPhone 11.jpg">
+            <h4>iPhone 11</h4>
+            <span class="old-price">TZS 520,000</span><br>
+            <span class="price">TZS 420,000</span>
+            <button onclick="addCart('1', 'iPhone 11', 420000)">Add to Cart</button>
+        </div>
+
+        <div class="product">
+            <span class="badge">SALE</span>
+            <img src="Samsung tv.jpg">
+            <h4>Samsung 43" Smart TV</h4>
+            <span class="old-price">TZS 920,000</span><br>
+            <span class="price">TZS 850,000</span>
+            <button onclick="addCart('2', 'Samsung 43\" Smart TV', 850000)">Add to Cart</button>
+        </div>
+
+        <div class="product">
+            <img src="HP laptop.jpg">
+            <h4>HP Laptop Core i5</h4>
+            <span class="price">TZS 1,200,000</span>
+            <button onclick="addCart('3', 'HP Laptop Core i5', 1200000)">Add to Cart</button>
+        </div>
+
+        <div class="product">
+            <span class="badge">HOT</span>
+            <img src="Speaker.jpg">
+            <h4>Bluetooth Speaker</h4>
+            <span class="old-price">TZS 150,000</span><br>
+            <span class="price">TZS 120,000</span>
+            <button onclick="addCart('4', 'Bluetooth Speaker', 120000)">Add to Cart</button>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        Free Delivery • Explore high-quality tech with local delivery
+        <br>© 2026 Tanzatronics . All Rights Reserved
+    </footer>
+
+
+    <nav class="nav-sidebar" id="sideNav">
+        <div class="sidebar-header">
+            <span>Menu</span>
+            <span onclick="toggleMenu()" style="cursor:pointer">✕</span>
+        </div>
+        <ul class="menu">
+            <li onclick="location.reload()">Home</li>
+            <li onclick="toggleSub('catalog')">Product Catalog <span>▼</span></li>
+            <ul id="catalog" class="submenu">
+                <li onclick="location.href='tvs.html'">Tv & Video</li>
+                <li onclick="location.href='audio.html'">Audio</li>
+                <li onclick="location.href='phones.html'">Mobile Phones</li>
+                <li onclick="location.href='consoles.html'">Game Consoles</li>
+                <li onclick="location.href='laptops.html'">Laptops & PCs</li>
+            </ul>
+            <li>Orders</li>
+            <li>Contact Us</li>
         </ul>
+    </nav>
 
-    </body>
-    <script>const menuBtn = document.getElementById("menuBtn");
-  const menu = document.getElementById("menu");
+    <!-- CART MODAL -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-panel">
+            <div class="cart-header">
+                <h2>Shopping Cart</h2>
+                <span class="cart-close" onclick="toggleCart()">✕</span>
+            </div>
+            <div class="cart-items" id="cartItemsList">
+                <div class="cart-empty">Your cart is empty</div>
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span class="cart-total-price" id="cartTotalPrice">TZS 0</span>
+                </div>
+                <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
 
-  menuBtn.onclick = () => {
-    menu.classList.toggle("hidden");
-  };
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-card">
+            <span class="close-modal" onclick="closeLogin()">×</span>
 
-  function toggleSub(id) {
-    document.getElementById(id).classList.toggle("hidden");
-  }
-</script>
+            <div id="loginFields">
+                <h2>Login</h2>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="name@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPass" placeholder="••••••••">
+                </div>
+                <button class="auth-btn" onclick="handleAuth('login')">Sign In</button>
+                <p class="switch-form">New to Tanzatronics? <span onclick="toggleAuthForms()">Create an account</span>
+                </p>
+            </div>
+
+            <div id="registerFields" style="display:none;">
+                <h2>Create Account</h2>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" placeholder="name@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" placeholder="Min. 8 characters">
+                </div>
+                <button class="auth-btn" onclick="handleAuth('register')">Register Now</button>
+                <p class="switch-form">Already have an account? <span onclick="toggleAuthForms()">Login here</span></p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
