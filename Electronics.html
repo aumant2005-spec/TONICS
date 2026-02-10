@@ -587,10 +587,10 @@
 
     <!-- CATEGORIES -->
     <section class="categories">
-       <a href="Phones.html" class="category">📱 Phones</a>
-        <a href="tvs.html" class="category">📺 TVs</a>
-        <a href="laptops.html" class="category">💻 Laptops</a>
+        <a href="Phones.html" class="category">📱 Phones</a>
         <a href="audio.html" class="category">🔊 Audio</a>
+        <a href="laptops.html" class="category">💻 Laptops</a>
+        <a href="tvs.html" class="category">📺 TVs</a>
         <a href="consoles.html" class="category">🎮 Consoles</a>
     </section>
 
@@ -648,7 +648,7 @@
         <ul class="menu">
             <li onclick="location.reload()">Home</li>
             <li onclick="toggleSub('catalog')">Product Catalog <span>▼</span></li>
-                <ul id="catalog" class="submenu">
+            <ul id="catalog" class="submenu">
                 <li onclick="location.href='tvs.html'">Tv & Video</li>
                 <li onclick="location.href='audio.html'">Audio</li>
                 <li onclick="location.href='Phones.html'">Mobile Phones</li>
@@ -721,59 +721,59 @@
 </body>
 
 <script>
-        // Initialize cart on page load
-        window.addEventListener('DOMContentLoaded', function() {
-            updateCartDisplay();
-        });
+    // Initialize cart on page load
+    window.addEventListener('DOMContentLoaded', function () {
+        updateCartDisplay();
+    });
 
-        // Cart Management
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    // Cart Management
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-        function addCart(id, name, price) {
-            const existingItem = cart.find(item => item.id === id);
-            if (existingItem) {
-                existingItem.qty += 1;
-            } else {
-                cart.push({ id, name, price, qty: 1 });
-            }
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateCartDisplay();
-            alert(`${name} added to cart!`);
+    function addCart(id, name, price) {
+        const existingItem = cart.find(item => item.id === id);
+        if (existingItem) {
+            existingItem.qty += 1;
+        } else {
+            cart.push({ id, name, price, qty: 1 });
+        }
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartDisplay();
+        alert(`${name} added to cart!`);
+    }
+
+    function removeFromCart(id) {
+        cart = cart.filter(item => item.id !== id);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartDisplay();
+    }
+
+    function updateCartDisplay() {
+        const cartCount = document.getElementById('cartCount');
+        const cartItemsList = document.getElementById('cartItemsList');
+        const cartTotalPrice = document.getElementById('cartTotalPrice');
+
+        const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+
+        if (totalItems > 0) {
+            cartCount.textContent = totalItems;
+            cartCount.style.display = 'flex';
+        } else {
+            cartCount.style.display = 'none';
         }
 
-        function removeFromCart(id) {
-            cart = cart.filter(item => item.id !== id);
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateCartDisplay();
+        if (cart.length === 0) {
+            cartItemsList.innerHTML = '<div class="cart-empty">Your cart is empty</div>';
+            cartTotalPrice.textContent = 'TZS 0';
+            return;
         }
 
-        function updateCartDisplay() {
-            const cartCount = document.getElementById('cartCount');
-            const cartItemsList = document.getElementById('cartItemsList');
-            const cartTotalPrice = document.getElementById('cartTotalPrice');
-            
-            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
-            
-            if (totalItems > 0) {
-                cartCount.textContent = totalItems;
-                cartCount.style.display = 'flex';
-            } else {
-                cartCount.style.display = 'none';
-            }
+        let html = '';
+        let total = 0;
 
-            if (cart.length === 0) {
-                cartItemsList.innerHTML = '<div class="cart-empty">Your cart is empty</div>';
-                cartTotalPrice.textContent = 'TZS 0';
-                return;
-            }
-
-            let html = '';
-            let total = 0;
-
-            cart.forEach(item => {
-                const itemTotal = item.price * item.qty;
-                total += itemTotal;
-                html += `
+        cart.forEach(item => {
+            const itemTotal = item.price * item.qty;
+            total += itemTotal;
+            html += `
                     <div class="cart-item">
                         <div class="cart-item-details">
                             <div class="cart-item-name">${item.name}</div>
@@ -785,88 +785,88 @@
                         </div>
                     </div>
                 `;
-            });
+        });
 
-            cartItemsList.innerHTML = html;
-            cartTotalPrice.textContent = `TZS ${total.toLocaleString()}`;
+        cartItemsList.innerHTML = html;
+        cartTotalPrice.textContent = `TZS ${total.toLocaleString()}`;
+    }
+
+    function toggleCart() {
+        document.getElementById('cartModal').classList.toggle('active');
+    }
+
+    function checkout() {
+        if (cart.length === 0) {
+            alert('Your cart is empty!');
+            return;
         }
+        const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+        alert(`Proceeding to checkout with total: TZS ${total.toLocaleString()}`);
+    }
 
-        function toggleCart() {
-            document.getElementById('cartModal').classList.toggle('active');
-        }
+    // Toggle Sidebar
+    function toggleMenu() {
+        document.getElementById('sideNav').classList.toggle('active');
+    }
 
-        function checkout() {
-            if (cart.length === 0) {
-                alert('Your cart is empty!');
-                return;
-            }
-            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            alert(`Proceeding to checkout with total: TZS ${total.toLocaleString()}`);
-        }
+    // Toggle Submenu
+    function toggleSub(id) {
+        const sub = document.getElementById(id);
+        sub.classList.toggle('show');
+    }
 
-        // Toggle Sidebar
-        function toggleMenu() {
-            document.getElementById('sideNav').classList.toggle('active');
-        }
+    // Modal Controls
+    function openLogin() {
+        document.getElementById('loginModal').style.display = 'flex';
+    }
 
-        // Toggle Submenu
-        function toggleSub(id) {
-            const sub = document.getElementById(id);
-            sub.classList.toggle('show');
-        }
+    function closeLogin() {
+        document.getElementById('loginModal').style.display = 'none';
+    }
 
-        // Modal Controls
-        function openLogin() {
-            document.getElementById('loginModal').style.display = 'flex';
-        }
-
-        function closeLogin() {
-            document.getElementById('loginModal').style.display = 'none';
-        }
-
-        // Close modal if user clicks outside the card
-        window.onclick = function (event) {
-            let modal = document.getElementById('loginModal');
-            if (event.target == modal) {
-                closeLogin();
-            }
-            let cartModal = document.getElementById('cartModal');
-            if (event.target == cartModal) {
-                toggleCart();
-            }
-        }
-
-        // Switch between Login and Register
-        function toggleAuthForms() {
-            const login = document.getElementById('loginFields');
-            const register = document.getElementById('registerFields');
-
-            if (login.style.display === 'none') {
-                login.style.display = 'block';
-                register.style.display = 'none';
-            } else {
-                login.style.display = 'none';
-                register.style.display = 'block';
-            }
-        }
-
-        // Mock Authentication Logic
-        function handleAuth(type) {
-            const email = document.getElementById('loginEmail').value;
-
-            if (type === 'login' && email === "") {
-                alert("Please enter your email.");
-                return;
-            }
-
-            // Simulate a successful login
-            alert(type === 'login' ? "Logged in successfully!" : "Account created successfully!");
-
-            // Update UI to show logged in state
-            document.getElementById('loggedInBadge').style.display = 'block';
-
+    // Close modal if user clicks outside the card
+    window.onclick = function (event) {
+        let modal = document.getElementById('loginModal');
+        if (event.target == modal) {
             closeLogin();
         }
-    </script>
+        let cartModal = document.getElementById('cartModal');
+        if (event.target == cartModal) {
+            toggleCart();
+        }
+    }
+
+    // Switch between Login and Register
+    function toggleAuthForms() {
+        const login = document.getElementById('loginFields');
+        const register = document.getElementById('registerFields');
+
+        if (login.style.display === 'none') {
+            login.style.display = 'block';
+            register.style.display = 'none';
+        } else {
+            login.style.display = 'none';
+            register.style.display = 'block';
+        }
+    }
+
+    // Mock Authentication Logic
+    function handleAuth(type) {
+        const email = document.getElementById('loginEmail').value;
+
+        if (type === 'login' && email === "") {
+            alert("Please enter your email.");
+            return;
+        }
+
+        // Simulate a successful login
+        alert(type === 'login' ? "Logged in successfully!" : "Account created successfully!");
+
+        // Update UI to show logged in state
+        document.getElementById('loggedInBadge').style.display = 'block';
+
+        closeLogin();
+    }
+</script>
 
 </html>

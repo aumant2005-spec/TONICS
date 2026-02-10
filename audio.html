@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Audio - Tanzatronics</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #d35400;
+            --bg: #f4f7f6
+        }
+
+        body {
+            font-family: Segoe UI, Roboto, Arial;
+            margin: 0;
+            background: var(--bg);
+            color: #222
+        }
+
+        header {
+            padding: 18px 5%;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center
+        }
+
+        .header-left {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex: 1
+        }
+
+        .brand {
+            font-weight: 700;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 1.2rem
+        }
+
+        .cart-icon {
+            cursor: pointer;
+            font-size: 1.5rem;
+            position: relative
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: red;
+            color: #fff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700
+        }
+
+        nav a {
+            color: var(--primary);
+            text-decoration: none;
+            margin-left: 50px
+        }
+
+        .products {
+            padding: 20px 5%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px
+        }
+
+        .product {
+            background: #fff;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, .06);
+            text-align: center
+        }
+
+        .product img {
+            width: 100%;
+            height: 180px;
+            object-fit: contain
+        }
+
+        .product h4 {
+            margin: 10px 0 5px
+        }
+
+        .price {
+            color: var(--accent);
+            font-weight: 700
+        }
+
+        .view {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 14px;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 6px;
+            text-decoration: none;
+            cursor: pointer;
+            border: none
+        }
+
+        .view:hover {
+            background: #34495e
+        }
+
+        .cart-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, .5);
+            z-index: 2000;
+            justify-content: flex-end
+        }
+
+        .cart-modal.active {
+            display: flex
+        }
+
+        .cart-panel {
+            background: #fff;
+            width: 100%;
+            max-width: 450px;
+            height: 100%;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 15px
+        }
+
+        .cart-header h2 {
+            margin: 0;
+            font-size: 1.5rem
+        }
+
+        .cart-close {
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #666
+        }
+
+        .cart-items {
+            flex: 1
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 0.95rem
+        }
+
+        .cart-item-details {
+            flex: 1
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            color: #222
+        }
+
+        .cart-item-qty {
+            color: #888;
+            margin-top: 4px
+        }
+
+        .cart-item-price {
+            color: var(--accent);
+            font-weight: 700;
+            text-align: right
+        }
+
+        .cart-remove {
+            color: #e74c3c;
+            cursor: pointer;
+            margin-left: 10px
+        }
+
+        .cart-empty {
+            text-align: center;
+            color: #888;
+            padding: 40px 20px
+        }
+
+        .cart-footer {
+            border-top: 2px solid #ddd;
+            padding-top: 15px;
+            margin-top: 15px
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 15px
+        }
+
+        .cart-total-price {
+            color: var(--accent)
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer
+        }
+
+        .checkout-btn:hover {
+            background: #e67e22
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-left">
+            <div class="brand" onclick="location.href='Electronics.html'">Tanzatronics</div>
+            <nav><a href="Electronics.html">Home</a></nav>
+        </div>
+        <div class="cart-icon" onclick="toggleCart()">
+            🛒
+            <span class="cart-badge" id="cartCount" style="display:none;">0</span>
+        </div>
+    </header>
+    <main>
+        <h2 style="margin:22px 5% 0">🔊 Audio</h2>
+        <section class="products">
+            <div class="product">
+                <img src="jbl 310.jpg" alt="JBL Partybox 310">
+                <h4>JBL Partybox 310</h4>
+                <span class="price">TZS 1,500,000</span>
+                <button class="view" onclick="addCart('10', 'JBL Partybox 310', 1500000)">Add to Cart</button>
+            </div>
+            <div class="product">
+                <img src="beats .jpg" alt="Beats Studio Pro">
+                <h4>Beats Studio Pro</h4>
+                <span class="price">TZS 200,000</span>
+                <button class="view" onclick="addCart('11', 'Beats Studio Pro', 200000)">Add to Cart</button>
+            </div>
+            <div class="product">
+                <img src="airpods.jpg" alt="Apple AirPods(4th Gen)">
+                <h4>Apple AirPods(4th Gen)</h4>
+                <span class="price">TZS 130,000</span>
+                <button class="view" onclick="addCart('12', 'Apple AirPods(4th Gen)', 130000)">Add to Cart</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- CART MODAL -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-panel">
+            <div class="cart-header">
+                <h2>Shopping Cart</h2>
+                <span class="cart-close" onclick="toggleCart()">✕</span>
+            </div>
+            <div class="cart-items" id="cartItemsList">
+                <div class="cart-empty">Your cart is empty</div>
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span class="cart-total-price" id="cartTotalPrice">TZS 0</span>
+                </div>
+                <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            updateCartDisplay();
+        });
+
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        function addCart(id, name, price) {
+            const existingItem = cart.find(item => item.id === id);
+            if (existingItem) {
+                existingItem.qty += 1;
+            } else {
+                cart.push({ id, name, price, qty: 1 });
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartDisplay();
+            alert(`${name} added to cart!`);
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartDisplay();
+        }
+
+        function updateCartDisplay() {
+            const cartCount = document.getElementById('cartCount');
+            const cartItemsList = document.getElementById('cartItemsList');
+            const cartTotalPrice = document.getElementById('cartTotalPrice');
+
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+
+            if (totalItems > 0) {
+                cartCount.textContent = totalItems;
+                cartCount.style.display = 'flex';
+            } else {
+                cartCount.style.display = 'none';
+            }
+
+            if (cart.length === 0) {
+                cartItemsList.innerHTML = '<div class="cart-empty">Your cart is empty</div>';
+                cartTotalPrice.textContent = 'TZS 0';
+                return;
+            }
+
+            let html = '';
+            let total = 0;
+
+            cart.forEach(item => {
+                const itemTotal = item.price * item.qty;
+                total += itemTotal;
+                html += `
+          <div class="cart-item">
+            <div class="cart-item-details">
+              <div class="cart-item-name">${item.name}</div>
+              <div class="cart-item-qty">Qty: ${item.qty}</div>
+            </div>
+            <div style="text-align: right;">
+              <div class="cart-item-price">TZS ${itemTotal.toLocaleString()}</div>
+              <span class="cart-remove" onclick="removeFromCart('${item.id}')">Remove</span>
+            </div>
+          </div>
+        `;
+            });
+
+            cartItemsList.innerHTML = html;
+            cartTotalPrice.textContent = `TZS ${total.toLocaleString()}`;
+        }
+
+        function toggleCart() {
+            document.getElementById('cartModal').classList.toggle('active');
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            alert(`Proceeding to checkout with total: TZS ${total.toLocaleString()}`);
+        }
+
+        window.onclick = function (event) {
+            let cartModal = document.getElementById('cartModal');
+            if (event.target == cartModal) {
+                toggleCart();
+            }
+        }
+    </script>
+</body>
+
+</html>
